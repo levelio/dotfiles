@@ -56,20 +56,30 @@
                (flycheck-eslint--find-working-directory 'javascript-eslint)))))
 
 (dolist (hook '(js-mode-hook js-ts-mode-hook
-                typescript-mode-hook typescript-ts-mode-hook
+                typescript-mode-hook typescript-ts-mode-hook tsx-ts-mode-hook
                 web-mode-hook))
   (add-hook hook #'+eslint-setup-flycheck-h))
 
 (after! flycheck-eglot
   (setq flycheck-eglot-exclusive nil))
 
-(add-hook 'eglot-managed-mode-hook
-          (lambda ()
-            (when eglot--managed-mode
-              (+eslint-setup-flycheck-h)
-              (when (and (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode
-                                         'typescript-ts-mode 'tsx-ts-mode 'web-mode)
-                         (flycheck-valid-checker-p 'javascript-eslint)
-                         (flycheck-valid-checker-p 'eglot-check))
-                (flycheck-add-next-checker 'eglot-check '(warning . javascript-eslint)))
-              (flycheck-buffer))))
+(defun +frontend-eglot-flycheck-ready-p ()
+  "Return non-nil when the current buffer can chain Eglot and ESLint."
+  (and (bound-and-true-p eglot--managed-mode)
+       (bound-and-true-p flycheck-mode)
+       (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode
+                       'typescript-ts-mode 'tsx-ts-mode 'web-mode)
+       (flycheck-valid-checker-p 'javascript-eslint)
+       (flycheck-valid-checker-p 'eglot-check)))
+
+(defun +frontend-configure-eglot-eslint-h ()
+  "Chain ESLint after Eglot once both Eglot and Flycheck are active."
+  (when (+frontend-eglot-flycheck-ready-p)
+    (+eslint-setup-flycheck-h)
+    (unless (member '(warning . javascript-eslint)
+                    (flycheck-checker-get 'eglot-check 'next-checkers))
+      (flycheck-add-next-checker 'eglot-check '(warning . javascript-eslint)))
+    (ignore-errors (flycheck-buffer))))
+
+(add-hook 'eglot-managed-mode-hook #'+frontend-configure-eglot-eslint-h)
+(add-hook 'flycheck-mode-hook #'+frontend-configure-eglot-eslint-h)
