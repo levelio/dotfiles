@@ -11,3 +11,6 @@
 (package! shell-maker)
 (package! acp)
 (package! agent-shell)
+
+;; Nyan Cat in mode-line
+(package! nyan-mode)

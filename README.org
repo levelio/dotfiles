@@ -1,0 +1,34 @@
+#+title: Private Doom Config
+
+* Layout
+- =init.el=: enable Doom modules only.
+- =packages.el=: declare extra packages only.
+- =config.el=: stable loader for the private config files in =modules/=.
+- =custom.el=: Doom-managed Custom UI state. Keep this file, but avoid hand-editing it.
+- =modules/ui.el=: theme, font, dashboard image, Magit colors.
+- =modules/environment.el=: GUI shell environment and local PATH tweaks.
+- =modules/frontend-modes.el=: frontend major-mode selection, indentation, project markers.
+- =modules/frontend-formatting.el=: formatter selection and Apheleia wiring.
+- =modules/frontend-lsp.el=: Eglot startup behavior for frontend buffers.
+- =modules/frontend-checking.el=: Flycheck and ESLint integration.
+- =modules/editing.el=: Evil and Corfu editing behavior.
+- =modules/agent.el=: Agent Shell behavior and session defaults.
+- =modules/terminal.el=: vterm behavior.
+- =modules/keybinds.el=: user keybindings.
+
+* Maintenance Rules
+- Keep =config.el= as a loader only.
+- Put machine-specific tweaks in =modules/environment.el= or a future local-only file.
+- Add new behavior to the closest existing module before creating another one.
+- Remove dead assets or notes once they are no longer referenced.
+- After structural changes, run =doom sync= and =doom doctor=.
+
+* Environment Notes
+- This config assumes Emacs 29.1+ and currently runs on Emacs 30, so =:lang javascript +tree-sitter= and =:lang web +tree-sitter= are enabled.
+- Frontend quality-of-life still depends on external tools such as =direnv=, =shfmt=, =stylelint=, =js-beautify=, and a Markdown renderer.
+- =biome=, =eslint_d=, =eslint=, and =typescript-language-server= are already available on this machine.
+- =direnv=, =shfmt=, =stylelint=, =js-beautify=, and =multimarkdown= are installed and validated with =doom doctor=.
+
+* Remaining System Items
+- The current Emacs build does not provide native compilation. Fixing that requires replacing or rebuilding Emacs, not editing this repo.
+- Doom doctor explicitly checks for the =Symbola= font by name. It is still missing on this machine, and Homebrew does not currently expose an obvious =Symbola= package in the active taps.

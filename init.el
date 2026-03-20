@@ -59,12 +59,11 @@
        data
        emacs-lisp
        (graphql +lsp)
-       (javascript +lsp)
-       (typescript +lsp)
+       (javascript +lsp +tree-sitter)
        markdown
        org
        sh
-       (web +lsp)
+       (web +lsp +tree-sitter)
 
        :config
        (default +bindings +smartparens))
