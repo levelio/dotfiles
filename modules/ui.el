@@ -11,7 +11,7 @@
         nyan-bar-length 16)
   (nyan-mode 1))
 
-(setq fancy-splash-image (expand-file-name "nyancat.svg" doom-private-dir))
+(setq fancy-splash-image (expand-file-name "nyancat.png" doom-private-dir))
 
 (add-hook 'window-setup-hook #'toggle-frame-maximized)
 
