@@ -1,5 +1,52 @@
 ;;; modules/files.el -*- lexical-binding: t; -*-
 
+(after! ibuffer
+  (setq ibuffer-expert t
+        ibuffer-show-empty-filter-groups nil
+        ibuffer-default-sorting-mode 'alphabetic
+        ibuffer-formats
+        '((mark modified read-only locked " "
+                (name 35 35 :left :elide) " "
+                (size 9 -1 :right) " "
+                (mode 18 18 :left :elide) " "
+                filename-and-process)))
+
+  (setq ibuffer-saved-filter-groups
+        '(("default"
+           ("Dired" (derived-mode . dired-mode))
+           ("Magit" (or (name . "^\\*magit")
+                        (derived-mode . magit-mode)))
+           ("Org" (derived-mode . org-mode))
+           ("Shell" (or (mode . shell-mode)
+                        (mode . eshell-mode)
+                        (mode . term-mode)
+                        (mode . vterm-mode)))
+           ("Emacs" (or (name . "^\\*scratch\\*$")
+                        (name . "^\\*Messages\\*$")
+                        (name . "^\\*Warnings\\*$")
+                        (name . "^\\*Help\\*$")
+                        (name . "^\\*Backtrace\\*$")))
+           ("Config" (filename . "/\\.config/doom/"))
+           ("Code" (derived-mode . prog-mode))
+           ("Text" (or (derived-mode . text-mode)
+                       (mode . markdown-mode)))
+           ("Special" (name . "^\\*")))))
+
+  (defun +ibuffer-setup-h ()
+    (ibuffer-switch-to-saved-filter-groups "default")
+    (unless (eq ibuffer-sorting-mode 'alphabetic)
+      (ibuffer-do-sort-by-alphabetic)))
+
+  (add-hook 'ibuffer-mode-hook #'+ibuffer-setup-h)
+  (map! :map ibuffer-mode-map
+        :n "q" #'quit-window
+        :n "gr" #'ibuffer-update
+        :n "/" #'ibuffer-filter-by-name
+        :n "s n" #'ibuffer-do-sort-by-alphabetic
+        :n "s m" #'ibuffer-do-sort-by-major-mode
+        :n "s s" #'ibuffer-do-sort-by-size
+        :n "g r" #'ibuffer-switch-to-saved-filter-groups))
+
 (after! dired
   (setq delete-by-moving-to-trash t
         dired-dwim-target t

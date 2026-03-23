@@ -1,8 +1,40 @@
 ;;; modules/ui.el -*- lexical-binding: t; -*-
 
-(setq doom-theme 'doom-snazzy
+(setq doom-theme 'doom-opera-light
+      doom-opera-light-padded-modeline 4
+      doom-opera-light-brighter-modeline nil
       display-line-numbers-type 'relative
       org-directory "~/org/")
+
+(defun +ui-setup-modeline-faces-h ()
+  (set-face-attribute 'mode-line nil
+                      :background (doom-lighten (doom-color 'bg) 0.02)
+                      :foreground (doom-color 'fg)
+                      :box nil)
+  (set-face-attribute 'mode-line-inactive nil
+                      :background (doom-lighten (doom-color 'bg) 0.04)
+                      :foreground (doom-color 'fg-alt)
+                      :box nil)
+  (dolist (face '(doom-modeline-buffer-path
+                  doom-modeline-buffer-file
+                  doom-modeline-buffer-major-mode
+                  doom-modeline-project-parent-dir
+                  doom-modeline-project-dir
+                  doom-modeline-project-root-dir
+                  doom-modeline-vcs-default))
+    (set-face-attribute face nil :weight 'normal)))
+
+(after! doom-modeline
+  (setq doom-modeline-height 28
+        doom-modeline-bar-width 4
+        doom-modeline-icon t
+        doom-modeline-major-mode-icon t
+        doom-modeline-buffer-file-name-style 'truncate-upto-project
+        doom-modeline-minor-modes nil
+        doom-modeline-buffer-encoding nil
+        doom-modeline-time nil)
+  (+ui-setup-modeline-faces-h)
+  (add-hook 'doom-load-theme-hook #'+ui-setup-modeline-faces-h))
 
 (use-package! highlight-indent-guides
   :hook ((prog-mode yaml-mode) . highlight-indent-guides-mode)
