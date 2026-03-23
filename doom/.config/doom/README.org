@@ -26,11 +26,104 @@ When stowed, it should appear at =~/.config/doom=.
 - Remove dead assets or notes once they are no longer referenced.
 - After structural changes, run =doom sync= and =doom doctor=.
 
+* Dependencies
+- Emacs 29.1+ with Tree-sitter support. This config currently runs on Emacs 30.
+- Doom Emacs installed at =~/.config/emacs=.
+- GNU Stow, because this repo is meant to be linked into =~/.config/doom= from =~/dotfiles=.
+- Git, ripgrep, and fd for normal Doom and Dirvish workflows.
+- GNU coreutils if you want Dired to use =gls= for the configured listing switches.
+- =vips= if you want Dirvish image previews and thumbnails via =vipsthumbnail=.
+- A working shell login environment. =modules/environment.el= uses =exec-path-from-shell= and also appends =~/.local/share/fnm/aliases/default/bin= when present.
+- Node.js tooling for frontend work. This config expects these executables to exist somewhere on =PATH=: =biome=, =eslint_d= or =eslint=, =typescript-language-server=, =stylelint=, and =js-beautify=.
+- =direnv= for per-project environment loading.
+- =shfmt= for shell formatting.
+- =multimarkdown= for Markdown rendering expected by Doom doctor.
+- The =vterm= module is enabled, so a machine that can build native modules is strongly preferred.
+- Fonts:
+  - =JetBrainsMono Nerd Font= is used when available for =doom-font=.
+  - =Symbola= is still useful because Doom doctor checks for it explicitly.
+
+* Fresh macOS Bootstrap
+These steps assume a brand new macOS machine and a dotfiles checkout at =~/dotfiles=.
+
+1. Install Xcode Command Line Tools.
+
+#+begin_src bash
+xcode-select --install
+#+end_src
+
+2. Install Homebrew if it is not already present.
+
+#+begin_src bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+#+end_src
+
+3. Install the base packages used by this config.
+
+#+begin_src bash
+brew install git stow ripgrep fd coreutils cmake libtool direnv shfmt multimarkdown fnm vips
+#+end_src
+
+Notes:
+- =coreutils= provides =gls=, which this Dired config prefers when available.
+- =cmake= and =libtool= help native modules such as =vterm= build cleanly.
+- =vips= provides =vipsthumbnail=, which Dirvish uses for image previews.
+
+4. Install Emacs. Any build with Tree-sitter support and Emacs 29.1+ should work. The current setup runs on Emacs 30.
+
+5. Install the fonts used by the UI.
+
+#+begin_src bash
+brew tap homebrew/cask-fonts
+brew install --cask font-jetbrains-mono-nerd-font
+#+end_src
+
+Install =Symbola= manually if Doom doctor reports it missing.
+
+6. Install Doom Emacs itself.
+
+#+begin_src bash
+git clone https://github.com/doomemacs/doomemacs ~/.config/emacs
+~/.config/emacs/bin/doom install
+#+end_src
+
+7. Clone this dotfiles repo and stow the Doom package.
+
+#+begin_src bash
+git clone <your-dotfiles-repo> ~/dotfiles
+cd ~/dotfiles
+stow doom
+#+end_src
+
+That should create:
+
+#+begin_example
+~/.config/doom -> ~/dotfiles/doom/.config/doom
+#+end_example
+
+8. Install Node.js and the global CLI tools expected by this config.
+
+#+begin_src bash
+fnm install --lts
+fnm default lts-latest
+npm install -g @biomejs/biome eslint_d eslint typescript-language-server typescript js-beautify stylelint
+#+end_src
+
+9. Sync Doom and validate the environment.
+
+#+begin_src bash
+~/.config/emacs/bin/doom sync
+~/.config/emacs/bin/doom doctor
+#+end_src
+
+10. Start Emacs and let packages build on first launch. After changing =init.el= or =packages.el= in the future, run =doom sync= again.
+
 * Environment Notes
-- This config assumes Emacs 29.1+ and currently runs on Emacs 30, so =:lang javascript +tree-sitter= and =:lang web +tree-sitter= are enabled.
-- Frontend quality-of-life still depends on external tools such as =direnv=, =shfmt=, =stylelint=, =js-beautify=, and a Markdown renderer.
-- =biome=, =eslint_d=, =eslint=, and =typescript-language-server= are already available on this machine.
-- =direnv=, =shfmt=, =stylelint=, =js-beautify=, and =multimarkdown= are installed and validated with =doom doctor=.
+- Frontend formatting chooses between =biome=, =eslint_d=, and Doom's =prettier= formatter based on project files.
+- Eglot is configured to use =typescript-language-server= for =web-mode= TypeScript React buffers.
+- =exec-path-from-shell= imports GUI shell state on macOS so Emacs can see Homebrew, fnm, and other shell-managed tools.
+- Dirvish image previews depend on =vipsthumbnail= from =vips=.
+- =direnv=, =shfmt=, =stylelint=, =js-beautify=, and =multimarkdown= should all pass =doom doctor= on a healthy machine.
 
 * Remaining System Items
 - The current Emacs build does not provide native compilation. Fixing that requires replacing or rebuilding Emacs, not editing this repo.
