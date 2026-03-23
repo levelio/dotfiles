@@ -11,6 +11,7 @@
 (load! "modules/frontend-modes")
 (load! "modules/frontend-formatting")
 (load! "modules/frontend-lsp")
+(load! "modules/files")
 (load! "modules/editing")
 (load! "modules/agent")
 (load! "modules/frontend-checking")

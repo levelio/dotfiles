@@ -10,6 +10,9 @@
 ;; Agent Shell - Emacs buffer to interact with LLM agents (Claude Code, Gemini, etc.)
 (package! agent-shell)
 
+;; Modern Dired UI with preview/sidebar/history on top of built-in dired.
+(package! dirvish)
+
 ;; Nyan Cat in mode-line
 (package! nyan-mode)
 
