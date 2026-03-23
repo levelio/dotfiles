@@ -1,8 +1,27 @@
 ;;; modules/ui.el -*- lexical-binding: t; -*-
 
 (setq doom-theme 'doom-snazzy
-      display-line-numbers-type t
+      display-line-numbers-type 'relative
       org-directory "~/org/")
+
+(use-package! highlight-indent-guides
+  :hook ((prog-mode yaml-mode) . highlight-indent-guides-mode)
+  :config
+  (setq highlight-indent-guides-method 'character
+        highlight-indent-guides-character ?│
+        highlight-indent-guides-delay 0.05
+        highlight-indent-guides-auto-enabled nil
+        highlight-indent-guides-responsive 'top)
+
+  (defun +ui-setup-indent-guide-faces-h ()
+    (let ((guide-color (doom-blend 'fg 'bg 0.14))
+          (guide-focus-color (doom-blend 'fg 'bg 0.28)))
+      (set-face-foreground 'highlight-indent-guides-character-face guide-color)
+      (set-face-foreground 'highlight-indent-guides-top-character-face guide-focus-color)
+      (set-face-foreground 'highlight-indent-guides-stack-character-face guide-focus-color)))
+
+  (+ui-setup-indent-guide-faces-h)
+  (add-hook 'doom-load-theme-hook #'+ui-setup-indent-guide-faces-h))
 
 (use-package! nyan-mode
   :config
@@ -42,4 +61,4 @@
 
 (when (find-font (font-spec :family "JetBrainsMono Nerd Font"))
   (setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 18)
-        line-spacing 0.2))
+        line-spacing 0.4))

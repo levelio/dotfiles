@@ -7,6 +7,5 @@
 
 (after! corfu
   (setq corfu-popupinfo-delay '(0.3 . 0.5)
-        corfu-popupinfo-hide nil
-        corfu-preselect t)
+        corfu-preselect 'first)
   (define-key corfu-map [return] #'corfu-insert))

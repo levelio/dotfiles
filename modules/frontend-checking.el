@@ -9,13 +9,13 @@
     (let* ((flat-config-regex "\\`eslint\\.config\\(\\.js\\|\\.mjs\\|\\.cjs\\)?\\'")
            (eslintrc-regex "\\`\\.eslintrc\\(\\.\\(js\\|ya?ml\\|json\\)\\)?\\'"))
       (when buffer-file-name
-        (or (locate-dominating-file buffer-file-name "node_modules")
-            (locate-dominating-file buffer-file-name ".eslintignore")
-            (locate-dominating-file
+        (or (locate-dominating-file
              (file-name-directory buffer-file-name)
              (lambda (directory)
                (or (> (length (directory-files directory nil flat-config-regex t)) 0)
-                   (> (length (directory-files directory nil eslintrc-regex t)) 0))))))))
+                   (> (length (directory-files directory nil eslintrc-regex t)) 0))))
+            (locate-dominating-file buffer-file-name ".eslintignore")
+            (locate-dominating-file buffer-file-name "node_modules")))))
 
   (defun my/flycheck-eslint-config-exists-p ()
     "Check whether eslint config exists, including flat config files."
@@ -43,12 +43,14 @@
   (flycheck-add-mode 'javascript-eslint 'web-mode))
 
 (defun +eslint-setup-flycheck-h ()
-  "Prefer eslint_d, then project-local eslint, then global eslint."
-  (let* ((root (or (doom-project-root) default-directory))
+  "Prefer project-local eslint, then eslint_d, then global eslint."
+  (let* ((root (or (flycheck-eslint--find-working-directory 'javascript-eslint)
+                   (doom-project-root)
+                   default-directory))
          (local-eslint (expand-file-name "node_modules/.bin/eslint" root)))
     (setq-local flycheck-javascript-eslint-executable
-                (or (executable-find "eslint_d")
-                    (when (file-executable-p local-eslint) local-eslint)
+                (or (when (file-executable-p local-eslint) local-eslint)
+                    (executable-find "eslint_d")
                     (executable-find "eslint")))
     (when (derived-mode-p 'typescript-mode 'typescript-ts-mode 'js-mode 'js-ts-mode 'web-mode)
       (message "[ESLint] executable: %s, working-dir: %s"
@@ -78,8 +80,7 @@
     (+eslint-setup-flycheck-h)
     (unless (member '(warning . javascript-eslint)
                     (flycheck-checker-get 'eglot-check 'next-checkers))
-      (flycheck-add-next-checker 'eglot-check '(warning . javascript-eslint)))
-    (ignore-errors (flycheck-buffer))))
+      (flycheck-add-next-checker 'eglot-check '(warning . javascript-eslint)))))
 
 (add-hook 'eglot-managed-mode-hook #'+frontend-configure-eglot-eslint-h)
 (add-hook 'flycheck-mode-hook #'+frontend-configure-eglot-eslint-h)

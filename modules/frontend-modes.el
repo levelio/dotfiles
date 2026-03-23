@@ -1,18 +1,21 @@
 ;;; modules/frontend-modes.el -*- lexical-binding: t; -*-
 
-(setq-default indent-tabs-mode nil
-              tab-width 2)
+(setq-default tab-width 2)
 
 (setq js-indent-level 2
       typescript-indent-level 2
       typescript-ts-mode-indent-offset 2
       css-indent-offset 2)
 
+;; Highlight .env files, including variants like .env.local/.env.production.
+(use-package! dotenv-mode
+  :mode (("\\.env\\.[^/]+\\'" . dotenv-mode)
+         ("\\.env\\'" . dotenv-mode)))
+
 (after! web-mode
   (setq web-mode-markup-indent-offset 2
         web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2)
-  (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode)))
+        web-mode-code-indent-offset 2))
 
 (after! treesit
   (dolist (dir (list (expand-file-name ".local/etc/tree-sitter" user-emacs-directory)

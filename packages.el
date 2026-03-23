@@ -8,9 +8,13 @@
 (package! typescript-mode)
 
 ;; Agent Shell - Emacs buffer to interact with LLM agents (Claude Code, Gemini, etc.)
-(package! shell-maker)
-(package! acp)
 (package! agent-shell)
 
 ;; Nyan Cat in mode-line
 (package! nyan-mode)
+
+;; Indentation guides
+(package! highlight-indent-guides)
+
+;; .env syntax highlighting
+(package! dotenv-mode)
