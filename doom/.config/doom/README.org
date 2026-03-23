@@ -1,5 +1,8 @@
 #+title: Private Doom Config
 
+This package is intended to be managed from the dotfiles repo root with GNU Stow.
+When stowed, it should appear at =~/.config/doom=.
+
 * Layout
 - =init.el=: enable Doom modules only.
 - =packages.el=: declare extra packages only.
