@@ -1,5 +1,8 @@
 ;;; modules/editing.el -*- lexical-binding: t; -*-
 
+(setq scroll-margin 10
+      maximum-scroll-margin 0.5)
+
 (after! evil
   (setq evil-escape-key-sequence "kj"
         evil-escape-delay 0.2)
