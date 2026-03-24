@@ -15,6 +15,7 @@ More packages can be added later, for example:
 ```text
 zsh/.zshrc
 git/.gitconfig
+ghostty/.config/ghostty/config
 kitty/.config/kitty/kitty.conf
 ```
 
@@ -57,7 +58,7 @@ stow --delete doom
 Install multiple packages:
 
 ```bash
-stow doom zsh git
+stow doom ghostty zsh git
 ```
 
 ## Workflow
@@ -66,6 +67,15 @@ stow doom zsh git
 - Use package names that match the app or tool being configured.
 - Put app configs under `.config/...` inside each package.
 - Keep machine-specific secrets or local-only files outside this repo.
+
+## Ghostty Notes
+
+The Ghostty config lives in `ghostty/.config/ghostty/config`.
+Install it with:
+
+```bash
+stow ghostty
+```
 
 ## Doom Notes
 
