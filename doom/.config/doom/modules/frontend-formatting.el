@@ -14,12 +14,35 @@
         (file-exists-p (expand-file-name "eslint.config.mjs" root))
         (file-exists-p (expand-file-name "eslint.config.cjs" root)))))
 
+(defun +frontend-prettier-formatter ()
+  "Return the Prettier formatter that best matches the current buffer."
+  (cond
+   ((derived-mode-p 'typescript-mode 'typescript-ts-mode
+                    'typescript-tsx-mode 'tsx-ts-mode)
+    'prettier-typescript)
+   ((derived-mode-p 'js-mode 'js-ts-mode 'js2-mode)
+    'prettier-javascript)
+   ((derived-mode-p 'css-mode 'css-ts-mode)
+    'prettier-css)
+   ((derived-mode-p 'scss-mode)
+    'prettier-scss)
+   ((derived-mode-p 'json-mode 'json-ts-mode)
+    'prettier-json)
+   (t 'prettier)))
+
 (defun +frontend-select-formatter ()
   "Select the appropriate formatter for current buffer."
-  (cond
-   ((+frontend-project-uses-biome-p) 'biome)
-   ((+frontend-project-uses-eslint-flat-config-p) 'eslint-fix)
-   (t 'prettier)))
+  (let ((prettier (+frontend-prettier-formatter)))
+    (cond
+     ((+frontend-project-uses-biome-p) 'biome)
+     ;; In ESLint flat-config projects, let ESLint apply autofixes first and
+     ;; then let Prettier produce the final TSX/JSX layout.
+     ((and (+frontend-project-uses-eslint-flat-config-p)
+           (derived-mode-p 'js-mode 'js-ts-mode 'js2-mode
+                           'typescript-mode 'typescript-ts-mode
+                           'typescript-tsx-mode 'tsx-ts-mode 'web-mode))
+      (list 'eslint-fix prettier))
+     (t prettier))))
 
 (defun +frontend-setup-formatter-h ()
   "Select a formatter before Doom enables LSP formatting."
@@ -31,6 +54,11 @@
 (after! apheleia
   (require 'apheleia-formatters)
 
+  ;; typescript-mode's TSX fallback should use the same formatter chain
+  ;; as tree-sitter TSX buffers.
+  (setf (alist-get 'typescript-tsx-mode apheleia-mode-alist)
+        'prettier-typescript)
+
   (setf (alist-get 'biome apheleia-formatters)
         '("biome" "format" "--stdin-file-path" filepath))
 
@@ -38,7 +66,8 @@
         '("eslint_d" "--stdin" "--fix-to-stdout" "--stdin-filename" filepath)))
 
 (dolist (hook '(js-mode-hook js-ts-mode-hook js2-mode-hook
-                typescript-mode-hook typescript-ts-mode-hook tsx-ts-mode-hook
+                typescript-mode-hook typescript-ts-mode-hook
+                typescript-tsx-mode-hook tsx-ts-mode-hook
                 web-mode-hook css-mode-hook css-ts-mode-hook scss-mode-hook
                 less-css-mode-hook json-mode-hook json-ts-mode-hook))
   (add-hook hook #'+frontend-setup-formatter-h))

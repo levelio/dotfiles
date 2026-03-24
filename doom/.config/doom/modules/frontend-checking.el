@@ -39,6 +39,7 @@
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
+  (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
   (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
   (flycheck-add-mode 'javascript-eslint 'web-mode))
 
@@ -52,13 +53,16 @@
                 (or (when (file-executable-p local-eslint) local-eslint)
                     (executable-find "eslint_d")
                     (executable-find "eslint")))
-    (when (derived-mode-p 'typescript-mode 'typescript-ts-mode 'js-mode 'js-ts-mode 'web-mode)
+    (when (derived-mode-p 'typescript-mode 'typescript-ts-mode
+                          'typescript-tsx-mode 'js-mode 'js-ts-mode
+                          'web-mode)
       (message "[ESLint] executable: %s, working-dir: %s"
                flycheck-javascript-eslint-executable
                (flycheck-eslint--find-working-directory 'javascript-eslint)))))
 
 (dolist (hook '(js-mode-hook js-ts-mode-hook
-                typescript-mode-hook typescript-ts-mode-hook tsx-ts-mode-hook
+                typescript-mode-hook typescript-ts-mode-hook
+                typescript-tsx-mode-hook tsx-ts-mode-hook
                 web-mode-hook))
   (add-hook hook #'+eslint-setup-flycheck-h))
 
@@ -70,7 +74,8 @@
   (and (bound-and-true-p eglot--managed-mode)
        (bound-and-true-p flycheck-mode)
        (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode
-                       'typescript-ts-mode 'tsx-ts-mode 'web-mode)
+                       'typescript-ts-mode 'typescript-tsx-mode
+                       'tsx-ts-mode 'web-mode)
        (flycheck-valid-checker-p 'javascript-eslint)
        (flycheck-valid-checker-p 'eglot-check)))
 
