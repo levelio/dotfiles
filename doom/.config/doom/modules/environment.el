@@ -2,11 +2,12 @@
 
 (when (memq window-system '(mac ns x))
   (use-package! exec-path-from-shell
-    :config
+    :init
     (setq exec-path-from-shell-arguments '("-l"))
+    (setq exec-path-from-shell-variables
+          (delete-dups
+           (append '("PATH" "MANPATH" "PNPM_HOME" "FNM_MULTISHELL_PATH" "FNM_DIR")
+                   (when (boundp 'exec-path-from-shell-variables)
+                     exec-path-from-shell-variables))))
+    :config
     (exec-path-from-shell-initialize)))
-
-(let ((fnm-default-bin (expand-file-name "~/.local/share/fnm/aliases/default/bin")))
-  (when (file-directory-p fnm-default-bin)
-    (add-to-list 'exec-path fnm-default-bin)
-    (setenv "PATH" (concat fnm-default-bin path-separator (getenv "PATH")))))
