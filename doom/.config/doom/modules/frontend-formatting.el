@@ -14,6 +14,18 @@
         (file-exists-p (expand-file-name "eslint.config.mjs" root))
         (file-exists-p (expand-file-name "eslint.config.cjs" root)))))
 
+(defun +frontend-project-uses-eslint-p ()
+  "Return non-nil if current project uses any ESLint config style."
+  (when-let* ((root (or (doom-project-root) default-directory)))
+    (or (+frontend-project-uses-eslint-flat-config-p)
+        (file-exists-p (expand-file-name ".eslintrc" root))
+        (file-exists-p (expand-file-name ".eslintrc.js" root))
+        (file-exists-p (expand-file-name ".eslintrc.cjs" root))
+        (file-exists-p (expand-file-name ".eslintrc.mjs" root))
+        (file-exists-p (expand-file-name ".eslintrc.json" root))
+        (file-exists-p (expand-file-name ".eslintrc.yaml" root))
+        (file-exists-p (expand-file-name ".eslintrc.yml" root)))))
+
 (defun +frontend-prettier-formatter ()
   "Return the Prettier formatter that best matches the current buffer."
   (cond
@@ -35,9 +47,9 @@
   (let ((prettier (+frontend-prettier-formatter)))
     (cond
      ((+frontend-project-uses-biome-p) 'biome)
-     ;; In ESLint flat-config projects, let ESLint apply autofixes first and
-     ;; then let Prettier produce the final TSX/JSX layout.
-     ((and (+frontend-project-uses-eslint-flat-config-p)
+     ;; In ESLint-backed JS/TS projects, let ESLint apply autofixes first and
+     ;; then let Prettier produce the final layout.
+     ((and (+frontend-project-uses-eslint-p)
            (derived-mode-p 'js-mode 'js-ts-mode 'js2-mode
                            'typescript-mode 'typescript-ts-mode
                            'typescript-tsx-mode 'tsx-ts-mode 'web-mode))

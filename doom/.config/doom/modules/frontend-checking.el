@@ -60,11 +60,22 @@
                flycheck-javascript-eslint-executable
                (flycheck-eslint--find-working-directory 'javascript-eslint)))))
 
+(defun +frontend-setup-flycheck-visibility-h ()
+  "Make Flycheck errors more visible in frontend buffers."
+  (setq-local flycheck-highlighting-mode 'lines
+              flycheck-indication-mode 'right-fringe))
+
 (dolist (hook '(js-mode-hook js-ts-mode-hook
                 typescript-mode-hook typescript-ts-mode-hook
                 typescript-tsx-mode-hook tsx-ts-mode-hook
                 web-mode-hook))
   (add-hook hook #'+eslint-setup-flycheck-h))
+
+(dolist (hook '(js-mode-hook js-ts-mode-hook
+                typescript-mode-hook typescript-ts-mode-hook
+                typescript-tsx-mode-hook tsx-ts-mode-hook
+                web-mode-hook))
+  (add-hook hook #'+frontend-setup-flycheck-visibility-h))
 
 (after! flycheck-eglot
   (setq flycheck-eglot-exclusive nil))
