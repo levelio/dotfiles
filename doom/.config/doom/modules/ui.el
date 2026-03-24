@@ -7,14 +7,55 @@
       org-directory "~/org/")
 
 (defun +ui-setup-modeline-faces-h ()
-  (set-face-attribute 'mode-line nil
-                      :background (doom-lighten (doom-color 'bg) 0.02)
-                      :foreground (doom-color 'fg)
-                      :box nil)
-  (set-face-attribute 'mode-line-inactive nil
-                      :background (doom-lighten (doom-color 'bg) 0.04)
-                      :foreground (doom-color 'fg-alt)
-                      :box nil)
+  (let ((active-bg (doom-lighten (doom-color 'bg) 0.02))
+        (inactive-bg (doom-lighten (doom-color 'bg) 0.04)))
+    (set-face-attribute 'mode-line nil
+                        :background active-bg
+                        :foreground (doom-color 'fg)
+                        :box nil)
+    (when (facep 'mode-line-active)
+      (set-face-attribute 'mode-line-active nil
+                          :background active-bg
+                          :foreground (doom-color 'fg)
+                          :box nil))
+    (set-face-attribute 'mode-line-inactive nil
+                        :background inactive-bg
+                        :foreground (doom-color 'fg-alt)
+                        :box nil)
+    (when (facep 'solaire-mode-line-face)
+      (set-face-attribute 'solaire-mode-line-face nil
+                          :inherit 'mode-line
+                          :background active-bg
+                          :box nil))
+    (when (facep 'solaire-mode-line-inactive-face)
+      (set-face-attribute 'solaire-mode-line-inactive-face nil
+                          :inherit 'mode-line-inactive
+                          :background inactive-bg
+                          :box nil))
+    (when (facep 'doom-modeline-bar)
+      (set-face-attribute 'doom-modeline-bar nil
+                          :background (doom-color 'blue)
+                          :foreground (doom-color 'blue)
+                          :box nil))
+    (when (facep 'doom-modeline-bar-inactive)
+      (set-face-attribute 'doom-modeline-bar-inactive nil
+                          :inherit 'mode-line-inactive
+                          :background inactive-bg
+                          :foreground inactive-bg
+                          :box nil))
+    (dolist (face '(mode-line-highlight
+                    doom-modeline-highlight
+                    doom-modeline-panel
+                    doom-modeline-info
+                    doom-modeline-warning
+                    doom-modeline-urgent
+                    doom-modeline-debug
+                    doom-modeline-unread-number
+                    doom-modeline-notification))
+      (when (facep face)
+        (set-face-attribute face nil
+                            :background 'unspecified
+                            :box nil))))
   (dolist (face '(doom-modeline-buffer-path
                   doom-modeline-buffer-file
                   doom-modeline-buffer-major-mode
