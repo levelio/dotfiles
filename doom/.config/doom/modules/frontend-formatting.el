@@ -3,16 +3,18 @@
 (defun +frontend-project-uses-biome-p ()
   "Return non-nil if current project is configured for Biome."
   (when-let* ((root (or (doom-project-root) default-directory)))
-    (and (executable-find "biome")
-         (or (file-exists-p (expand-file-name "biome.json" root))
-             (file-exists-p (expand-file-name "biome.jsonc" root))))))
+    (or (file-exists-p (expand-file-name "biome.json" root))
+        (file-exists-p (expand-file-name "biome.jsonc" root)))))
 
 (defun +frontend-project-uses-eslint-flat-config-p ()
   "Return non-nil if current project uses ESLint flat config."
   (when-let* ((root (or (doom-project-root) default-directory)))
     (or (file-exists-p (expand-file-name "eslint.config.js" root))
         (file-exists-p (expand-file-name "eslint.config.mjs" root))
-        (file-exists-p (expand-file-name "eslint.config.cjs" root)))))
+        (file-exists-p (expand-file-name "eslint.config.cjs" root))
+        (file-exists-p (expand-file-name "eslint.config.ts" root))
+        (file-exists-p (expand-file-name "eslint.config.mts" root))
+        (file-exists-p (expand-file-name "eslint.config.cts" root)))))
 
 (defun +frontend-project-uses-eslint-p ()
   "Return non-nil if current project uses any ESLint config style."
@@ -26,35 +28,29 @@
         (file-exists-p (expand-file-name ".eslintrc.yaml" root))
         (file-exists-p (expand-file-name ".eslintrc.yml" root)))))
 
-(defun +frontend-prettier-formatter ()
-  "Return the Prettier formatter that best matches the current buffer."
-  (cond
-   ((derived-mode-p 'typescript-mode 'typescript-ts-mode
-                    'typescript-tsx-mode 'tsx-ts-mode)
-    'prettier-typescript)
-   ((derived-mode-p 'js-mode 'js-ts-mode 'js2-mode)
-    'prettier-javascript)
-   ((derived-mode-p 'css-mode 'css-ts-mode)
-    'prettier-css)
-   ((derived-mode-p 'scss-mode)
-    'prettier-scss)
-   ((derived-mode-p 'json-mode 'json-ts-mode)
-    'prettier-json)
-   (t 'prettier)))
+(defun +frontend-eslint-fixable-mode-p ()
+  "Return non-nil when the current buffer should be fixed by ESLint."
+  (derived-mode-p 'js-mode 'js-ts-mode 'js2-mode
+                  'typescript-mode 'typescript-ts-mode
+                  'typescript-tsx-mode 'tsx-ts-mode))
+
+(defun +frontend-biome-formattable-mode-p ()
+  "Return non-nil when the current buffer should be formatted by Biome."
+  (or (+frontend-eslint-fixable-mode-p)
+      (derived-mode-p 'css-mode 'css-ts-mode
+                      'scss-mode
+                      'json-mode 'json-ts-mode)))
 
 (defun +frontend-select-formatter ()
   "Select the appropriate formatter for current buffer."
-  (let ((prettier (+frontend-prettier-formatter)))
-    (cond
-     ((+frontend-project-uses-biome-p) 'biome)
-     ;; In ESLint-backed JS/TS projects, let ESLint apply autofixes first and
-     ;; then let Prettier produce the final layout.
-     ((and (+frontend-project-uses-eslint-p)
-           (derived-mode-p 'js-mode 'js-ts-mode 'js2-mode
-                           'typescript-mode 'typescript-ts-mode
-                           'typescript-tsx-mode 'tsx-ts-mode 'web-mode))
-      (list 'eslint-fix prettier))
-     (t prettier))))
+  (cond
+   ((and (+frontend-project-uses-biome-p)
+         (+frontend-biome-formattable-mode-p))
+    'biome)
+   ((and (+frontend-project-uses-eslint-p)
+         (+frontend-eslint-fixable-mode-p))
+    'eslint-fix)
+   (t nil)))
 
 (defun +frontend-setup-formatter-h ()
   "Select a formatter before Doom enables LSP formatting."
@@ -66,16 +62,15 @@
 (after! apheleia
   (require 'apheleia-formatters)
 
+  (setf (alist-get 'eslint-fix apheleia-formatters)
+        `("node"
+          ,(expand-file-name "bin/eslint-fix-stdin.cjs" doom-user-dir)
+          filepath))
+
   ;; typescript-mode's TSX fallback should use the same formatter chain
   ;; as tree-sitter TSX buffers.
   (setf (alist-get 'typescript-tsx-mode apheleia-mode-alist)
-        'prettier-typescript)
-
-  (setf (alist-get 'biome apheleia-formatters)
-        '("biome" "format" "--stdin-file-path" filepath))
-
-  (setf (alist-get 'eslint-fix apheleia-formatters)
-        '("eslint_d" "--stdin" "--fix-to-stdout" "--stdin-filename" filepath)))
+        'eslint-fix))
 
 (dolist (hook '(js-mode-hook js-ts-mode-hook js2-mode-hook
                 typescript-mode-hook typescript-ts-mode-hook

@@ -4,10 +4,24 @@
   (defvar flycheck-javascript-eslint-executable nil
     "The eslint executable for flycheck.")
 
+  (defun +frontend-find-eslint-executable (&optional root)
+    "Return the best eslint executable for ROOT."
+    (let* ((root (or root (doom-project-root) default-directory))
+           (candidates (list (expand-file-name "node_modules/.bin/eslint_d" root)
+                             (expand-file-name "node_modules/.bin/eslint" root)
+                             (executable-find "eslint_d")
+                             (executable-find "eslint"))))
+      (seq-find #'identity
+                (mapcar (lambda (candidate)
+                          (and candidate
+                               (file-executable-p candidate)
+                               candidate))
+                        candidates))))
+
   (defun my/flycheck-eslint--find-working-directory (_checker)
     "Find the working directory for eslint, including flat config setups."
-    (let* ((flat-config-regex "\\`eslint\\.config\\(\\.js\\|\\.mjs\\|\\.cjs\\)?\\'")
-           (eslintrc-regex "\\`\\.eslintrc\\(\\.\\(js\\|ya?ml\\|json\\)\\)?\\'"))
+    (let* ((flat-config-regex "\\`eslint\\.config\\(\\.\\(js\\|mjs\\|cjs\\|ts\\|mts\\|cts\\)\\)?\\'")
+           (eslintrc-regex "\\`\\.eslintrc\\(\\.\\(js\\|cjs\\|mjs\\|ya?ml\\|json\\)\\)?\\'"))
       (when buffer-file-name
         (or (locate-dominating-file
              (file-name-directory buffer-file-name)
@@ -21,11 +35,10 @@
     "Check whether eslint config exists, including flat config files."
     (let* ((working-dir (flycheck-eslint--find-working-directory 'javascript-eslint))
            (eslint-exec (or flycheck-javascript-eslint-executable
-                            (executable-find "eslint_d")
-                            (executable-find "eslint"))))
+                            (+frontend-find-eslint-executable working-dir))))
       (when (and working-dir eslint-exec)
-        (let ((flat-config-regex "\\`eslint\\.config\\(\\.js\\|\\.mjs\\|\\.cjs\\)?\\'")
-              (eslintrc-regex "\\`\\.eslintrc\\(\\.\\(js\\|ya?ml\\|json\\)\\)?\\'"))
+        (let ((flat-config-regex "\\`eslint\\.config\\(\\.\\(js\\|mjs\\|cjs\\|ts\\|mts\\|cts\\)\\)?\\'")
+              (eslintrc-regex "\\`\\.eslintrc\\(\\.\\(js\\|cjs\\|mjs\\|ya?ml\\|json\\)\\)?\\'"))
           (or (directory-files working-dir nil flat-config-regex t)
               (directory-files working-dir nil eslintrc-regex t))))))
 
@@ -40,22 +53,18 @@
   (flycheck-add-mode 'javascript-eslint 'typescript-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-ts-mode)
   (flycheck-add-mode 'javascript-eslint 'typescript-tsx-mode)
-  (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode)
-  (flycheck-add-mode 'javascript-eslint 'web-mode))
+  (flycheck-add-mode 'javascript-eslint 'tsx-ts-mode))
 
 (defun +eslint-setup-flycheck-h ()
   "Prefer project-local eslint, then eslint_d, then global eslint."
   (let* ((root (or (flycheck-eslint--find-working-directory 'javascript-eslint)
                    (doom-project-root)
-                   default-directory))
-         (local-eslint (expand-file-name "node_modules/.bin/eslint" root)))
+                   default-directory)))
     (setq-local flycheck-javascript-eslint-executable
-                (or (when (file-executable-p local-eslint) local-eslint)
-                    (executable-find "eslint_d")
-                    (executable-find "eslint")))
+                (+frontend-find-eslint-executable root))
     (when (derived-mode-p 'typescript-mode 'typescript-ts-mode
                           'typescript-tsx-mode 'js-mode 'js-ts-mode
-                          'web-mode)
+                          'tsx-ts-mode)
       (message "[ESLint] executable: %s, working-dir: %s"
                flycheck-javascript-eslint-executable
                (flycheck-eslint--find-working-directory 'javascript-eslint)))))
@@ -67,14 +76,12 @@
 
 (dolist (hook '(js-mode-hook js-ts-mode-hook
                 typescript-mode-hook typescript-ts-mode-hook
-                typescript-tsx-mode-hook tsx-ts-mode-hook
-                web-mode-hook))
+                typescript-tsx-mode-hook tsx-ts-mode-hook))
   (add-hook hook #'+eslint-setup-flycheck-h))
 
 (dolist (hook '(js-mode-hook js-ts-mode-hook
                 typescript-mode-hook typescript-ts-mode-hook
-                typescript-tsx-mode-hook tsx-ts-mode-hook
-                web-mode-hook))
+                typescript-tsx-mode-hook tsx-ts-mode-hook))
   (add-hook hook #'+frontend-setup-flycheck-visibility-h))
 
 (after! flycheck-eglot
@@ -86,7 +93,7 @@
        (bound-and-true-p flycheck-mode)
        (derived-mode-p 'js-mode 'js-ts-mode 'typescript-mode
                        'typescript-ts-mode 'typescript-tsx-mode
-                       'tsx-ts-mode 'web-mode)
+                       'tsx-ts-mode)
        (flycheck-valid-checker-p 'javascript-eslint)
        (flycheck-valid-checker-p 'eglot-check)))
 

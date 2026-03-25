@@ -7,6 +7,12 @@
 (map! :leader
       :desc "Ibuffer" "b I" #'ibuffer)
 
+(after! eglot
+  (map! :map eglot-mode-map
+        :leader
+        :desc "LSP Safe code action" "c a" #'+frontend-eglot-safe-code-actions
+        :desc "LSP Organize imports" "c o" #'eglot-code-action-organize-imports))
+
 (global-set-key [remap list-buffers] #'ibuffer)
 
 (map! :n "C-s" #'save-buffer

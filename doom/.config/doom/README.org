@@ -34,7 +34,7 @@ When stowed, it should appear at =~/.config/doom=.
 - GNU coreutils if you want Dired to use =gls= for the configured listing switches.
 - =vips= if you want Dirvish image previews and thumbnails via =vipsthumbnail=.
 - A working shell login environment. =modules/environment.el= uses =exec-path-from-shell= and also appends =~/.local/share/fnm/aliases/default/bin= when present.
-- Node.js tooling for frontend work. This config expects these executables to exist somewhere on =PATH=: =biome=, =eslint_d= or =eslint=, =typescript-language-server=, =stylelint=, and =js-beautify=.
+- Node.js tooling for frontend work. This config expects =vtsls= on =PATH=. Formatting prefers project-local =biome= and otherwise uses project-local =eslint_d= or =eslint= with global fallbacks.
 - =direnv= for per-project environment loading.
 - =shfmt= for shell formatting.
 - =multimarkdown= for Markdown rendering expected by Doom doctor.
@@ -106,7 +106,7 @@ That should create:
 #+begin_src bash
 fnm install --lts
 fnm default lts-latest
-npm install -g @biomejs/biome eslint_d eslint typescript-language-server typescript js-beautify stylelint
+npm install -g @biomejs/biome eslint_d eslint @vtsls/language-server typescript js-beautify stylelint
 #+end_src
 
 9. Sync Doom and validate the environment.
@@ -119,8 +119,9 @@ npm install -g @biomejs/biome eslint_d eslint typescript-language-server typescr
 10. Start Emacs and let packages build on first launch. After changing =init.el= or =packages.el= in the future, run =doom sync= again.
 
 * Environment Notes
-- Frontend formatting chooses between =biome=, =eslint_d=, and Doom's =prettier= formatter based on project files.
-- Eglot is configured to use =typescript-language-server= for =web-mode= TypeScript React buffers.
+- Frontend formatting prefers project-local =biome= and otherwise uses =eslint --fix= for JS/TS buffers.
+- ESLint is used for diagnostics as well, so checking and save-time fixes follow the same project config.
+- Eglot is configured to use =vtsls= for dedicated JavaScript/TypeScript modes and prefers the workspace TypeScript SDK.
 - =exec-path-from-shell= imports GUI shell state on macOS so Emacs can see Homebrew, fnm, and other shell-managed tools.
 - Dirvish image previews depend on =vipsthumbnail= from =vips=.
 - =direnv=, =shfmt=, =stylelint=, =js-beautify=, and =multimarkdown= should all pass =doom doctor= on a healthy machine.
