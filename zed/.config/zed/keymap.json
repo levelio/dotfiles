@@ -1,0 +1,158 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "context": "VimControl && !menu",
+    "bindings": {
+      // Put key bindings here if you want them to work in normal & visual mode.
+      "space g h d": "editor::ToggleSelectedDiffHunks",
+      "space g s": "git_panel::ToggleFocus",
+      // Toggle inlay hints
+      "space t i": "editor::ToggleInlayHints",
+
+      // Toggle soft wrap
+      "space u w": "editor::ToggleSoftWrap",
+
+      // NOTE: Toggle Zen mode, not fully working yet
+      "space c z": "workspace::ToggleCenteredLayout",
+
+      // Open markdown preview
+      "space m p": "markdown::OpenPreview",
+      "space m P": "markdown::OpenPreviewToTheSide",
+
+      // Open recent project
+      "space f p": "projects::OpenRecent",
+      // Search word under cursor
+      "space s w": "pane::DeploySearch",
+      // Go to file with `gf`
+      "g f": "editor::OpenExcerpts",
+      // Chat with AI
+      "cmd-k": "workspace::ToggleRightDock",
+      "cmd-l": "assistant::InlineAssist",
+      //
+      "space 1": ["pane::ActivateItem", 0],
+      "space 2": ["pane::ActivateItem", 1],
+      "space 3": ["pane::ActivateItem", 2],
+      "space 4": ["pane::ActivateItem", 3],
+      "space 5": ["pane::ActivateItem", 4],
+      "space 6": ["pane::ActivateItem", 5],
+      "space 7": ["pane::ActivateItem", 6],
+      "space 8": ["pane::ActivateItem", 7],
+      "space 9": ["pane::ActivateItem", 8],
+      "space 0": "pane::ActivateLastItem",
+    },
+  },
+  {
+    "context": "vim_mode == normal && !menu",
+    "bindings": {
+      // Show doc
+      "space k": "editor::Hover",
+      // Ctrl jklk to move between panes
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-j": "workspace::ActivatePaneDown",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      // + Buffers
+      // Switch between buffers
+      "shift-h": "pane::ActivatePreviousItem",
+      "shift-l": "pane::ActivateNextItem",
+      // Close active panel
+      "space c": "pane::CloseActiveItem",
+      "ctrl-q": "pane::CloseActiveItem",
+      // Save file
+      "ctrl-s": "workspace::Save",
+      // File finder
+      "space space": "file_finder::Toggle",
+      // Project search
+      "space /": "pane::DeploySearch",
+      "space g g": ["task::Spawn", { "task_name": "lazygit" }],
+      // File explorer
+      "space e": "project_panel::ToggleFocus",
+    },
+  },
+  {
+    "context": "vim_mode == insert",
+    "bindings": {
+      "k j": "vim::SwitchToNormalMode", // In insert mode, make jk escape to normal mode.
+    },
+  },
+  {
+    "context": "EmptyPane || SharedScreen",
+    "bindings": {
+      // Put key bindings here (in addition to the context above) if you want them to
+      // work when no editor exists.
+      // Open file finder
+      "space space": "file_finder::Toggle",
+      // Open recent project
+      "space f p": "projects::OpenRecent",
+    },
+  },
+  // Toggle terminal
+  {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-\\": "terminal_panel::ToggleFocus",
+    },
+  },
+  {
+    "context": "Terminal || Dock || Editor",
+    "bindings": {
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown",
+    },
+  },
+  {
+    "context": "menu",
+    "bindings": {
+      "ctrl-j": "editor::ContextMenuNext",
+      "ctrl-k": "editor::ContextMenuPrevious",
+    },
+  },
+  {
+    "context": "Workspace > (FileFinder || CommandPalette) > Picker > Editor",
+    "bindings": {
+      "ctrl-j": "menu::SelectNext",
+      "ctrl-k": "menu::SelectPrevious",
+    },
+  },
+  {
+    "context": "AgentPanel",
+    "bindings": {
+      "cmd-k": "workspace::ToggleRightDock",
+    },
+  },
+  {
+    "context": "GitPanel",
+    "bindings": {
+      "q": "git_panel::Close",
+    },
+  },
+  // File panel (netrw)
+  {
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      "space e": "workspace::ToggleLeftDock",
+      "a": "project_panel::NewFile",
+      "A": "project_panel::NewDirectory",
+      "r": "project_panel::Rename",
+      "d": "project_panel::Delete",
+      "x": "project_panel::Cut",
+      "c": "project_panel::Copy",
+      "p": "project_panel::Paste",
+      // Close project panel as project file panel on the right
+      "q": "workspace::ToggleLeftDock",
+      // Navigate between panel
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown",
+    },
+  },
+]
