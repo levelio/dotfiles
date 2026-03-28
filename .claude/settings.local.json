@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp -r ~/.config/zed/* /Users/zhiqiang/dotfiles/zed/.config/zed/)",
+      "Bash(rm -rf ~/.config/zed)",
+      "Bash(stow zed:*)",
+      "Bash(git add:*)",
+      "Bash(git reset:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Read(//Users/zhiqiang/.config/nvim/**)",
+      "Read(//Users/zhiqiang/.local/share/nvim/**)",
+      "Bash(mkdir -p /Users/zhiqiang/dotfiles/nvim/.config/nvim)",
+      "Bash(cp -r ~/.config/nvim/* /Users/zhiqiang/dotfiles/nvim/.config/nvim/)",
+      "Bash(rm -rf ~/.config/nvim)",
+      "Bash(stow nvim:*)",
+      "mcp__web-reader__webReader",
+      "mcp__web-search-prime__web_search_prime",
+      "Bash(brew install:*)",
+      "Bash(find /Users/zhiqiang/.config/emacs/.local/straight -path */agent-shell/*.el -name agent-shell-viewport*)"
+    ]
+  }
+}
