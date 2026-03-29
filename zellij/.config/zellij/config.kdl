@@ -1,0 +1,129 @@
+// Zellij Configuration
+// Managed by GNU Stow from ~/dotfiles/zellij
+
+// --- Appearance ---
+theme "catppuccin-macchiato"
+pane_frames false
+simplified_ui true
+show_startup_tips false
+show_release_notes false
+
+ui {
+    pane_frames {
+        rounded_corners true
+        hide_session_name true
+    }
+}
+
+// --- Shell ---
+// default_shell "zsh"
+// default_cwd "/Users/zhiqiang"
+
+// --- Scrolling ---
+scroll_buffer_size 100000
+scrollback_editor "nvim"
+
+// --- macOS Copy ---
+copy_command "pbcopy"
+copy_on_select true
+copy_clipboard "system"
+
+// --- Mouse ---
+mouse_mode true
+mouse_hover_effects true
+focus_follows_mouse false
+advanced_mouse_actions true
+
+// --- Session ---
+session_serialization false
+on_force_close "quit"
+
+// --- Misc ---
+auto_layout true
+osc8_hyperlinks true
+styled_underlines true
+
+// --- Keybindings (Alt-based, avoid Neovim conflicts) ---
+keybinds clear-defaults=true {
+    shared {
+        bind "Alt g" { SwitchToMode "Normal"; }
+    }
+    shared_except "locked" {
+        bind "Alt g" { SwitchToMode "Locked"; }
+    }
+    normal {
+        bind "Alt h" { MoveFocus "Left"; }
+        bind "Alt l" { MoveFocus "Right"; }
+        bind "Alt j" { MoveFocus "Down"; }
+        bind "Alt k" { MoveFocus "Up"; }
+        bind "Alt n" { NewPane; }
+        bind "Alt d" { NewPane "Down"; }
+        bind "Alt r" { NewPane "Right"; }
+        bind "Alt x" { CloseFocus; }
+        bind "Alt f" { ToggleFocusFullscreen; }
+        bind "Alt e" { TogglePaneFrames; }
+        bind "Alt q" { Quit; }
+        bind "Alt w" { SwitchToMode "Pane"; }
+        bind "Alt t" { SwitchToMode "Tab"; }
+        bind "Alt s" { SwitchToMode "Scroll"; }
+        bind "Alt o" { SwitchToMode "Session"; }
+        bind "Alt p" { SwitchToMode "Resize"; }
+    }
+    locked {
+        bind "Alt g" { SwitchToMode "Normal"; }
+    }
+    pane {
+        bind "h" { MoveFocus "Left"; }
+        bind "l" { MoveFocus "Right"; }
+        bind "j" { MoveFocus "Down"; }
+        bind "k" { MoveFocus "Up"; }
+        bind "n" { NewPane; }
+        bind "d" { NewPane "Down"; }
+        bind "r" { NewPane "Right"; }
+        bind "x" { CloseFocus; }
+        bind "f" { ToggleFocusFullscreen; }
+        bind "Alt g" { SwitchToMode "Locked"; }
+        bind "Esc" { SwitchToMode "Normal"; }
+    }
+    tab {
+        bind "n" { NewTab; }
+        bind "h" { GoToPreviousTab; }
+        bind "l" { GoToNextTab; }
+        bind "x" { CloseTab; }
+        bind "1" { GoToTab 1; }
+        bind "2" { GoToTab 2; }
+        bind "3" { GoToTab 3; }
+        bind "4" { GoToTab 4; }
+        bind "5" { GoToTab 5; }
+        bind "Alt g" { SwitchToMode "Locked"; }
+        bind "Esc" { SwitchToMode "Normal"; }
+    }
+    resize {
+        bind "h" { Resize "Increase Left"; }
+        bind "j" { Resize "Increase Down"; }
+        bind "k" { Resize "Increase Up"; }
+        bind "l" { Resize "Increase Right"; }
+        bind "H" { Resize "Decrease Left"; }
+        bind "J" { Resize "Decrease Down"; }
+        bind "K" { Resize "Decrease Up"; }
+        bind "L" { Resize "Decrease Right"; }
+        bind "=" { Resize "Increase"; }
+        bind "-" { Resize "Decrease"; }
+        bind "Alt g" { SwitchToMode "Locked"; }
+        bind "Esc" { SwitchToMode "Normal"; }
+    }
+    scroll {
+        bind "e" { EditScrollback; }
+        bind "j" { ScrollDown; }
+        bind "k" { ScrollUp; }
+        bind "d" { HalfPageScrollDown; }
+        bind "u" { HalfPageScrollUp; }
+        bind "Alt g" { SwitchToMode "Locked"; }
+        bind "Esc" { SwitchToMode "Normal"; }
+    }
+    session {
+        bind "d" { Detach; }
+        bind "Alt g" { SwitchToMode "Locked"; }
+        bind "Esc" { SwitchToMode "Normal"; }
+    }
+}

@@ -34,6 +34,9 @@ scrollback-limit = 10000
 # Mouse
 mouse-hide-while-typing = false
 
+# macOS Option as Alt (for Zellij etc.)
+macos-option-as-alt = true
+
 # Misc
 confirm-close-surface = false
 
