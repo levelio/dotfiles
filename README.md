@@ -7,7 +7,9 @@ Personal dotfiles managed with [GNU Stow](https://www.gnu.org/software/stow/).
 Each top-level directory is a Stow package:
 
 ```text
-doom/.config/doom/...
+nvim/.config/nvim/...
+alacritty/.config/alacritty/...
+zellij/.config/zellij/...
 ```
 
 More packages can be added later, for example:
@@ -15,7 +17,6 @@ More packages can be added later, for example:
 ```text
 zsh/.zshrc
 git/.gitconfig
-ghostty/.config/ghostty/config
 kitty/.config/kitty/kitty.conf
 ```
 
@@ -26,13 +27,15 @@ Clone this repo to `~/dotfiles`, then use `stow` from the repo root:
 ```bash
 brew install stow
 cd ~/dotfiles
-stow doom
+stow nvim alacritty zellij
 ```
 
 That will create:
 
 ```text
-~/.config/doom -> ~/dotfiles/doom/.config/doom
+~/.config/nvim -> ~/dotfiles/nvim/.config/nvim
+~/.config/alacritty -> ~/dotfiles/alacritty/.config/alacritty
+~/.config/zellij -> ~/dotfiles/zellij/.config/zellij
 ```
 
 ## Common Commands
@@ -40,25 +43,25 @@ That will create:
 Install a package:
 
 ```bash
-stow doom
+stow alacritty
 ```
 
 Restow after edits:
 
 ```bash
-stow --restow doom
+stow --restow alacritty
 ```
 
 Remove symlinks for a package:
 
 ```bash
-stow --delete doom
+stow --delete alacritty
 ```
 
 Install multiple packages:
 
 ```bash
-stow doom ghostty zsh git
+stow nvim alacritty zellij
 ```
 
 ## Workflow
@@ -67,17 +70,3 @@ stow doom ghostty zsh git
 - Use package names that match the app or tool being configured.
 - Put app configs under `.config/...` inside each package.
 - Keep machine-specific secrets or local-only files outside this repo.
-
-## Ghostty Notes
-
-The Ghostty config lives in `ghostty/.config/ghostty/config`.
-Install it with:
-
-```bash
-stow ghostty
-```
-
-## Doom Notes
-
-The Doom Emacs config lives in `doom/.config/doom/`.
-Package-specific notes are in `doom/.config/doom/README.org`.
