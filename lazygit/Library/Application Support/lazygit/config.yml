@@ -1,0 +1,8 @@
+customCommands:
+  - key: "G"
+    context: "files, status"
+    description: "AI commit message (staged)"
+    command: 'node "$HOME/.config/nvim/scripts/ai-commit-message.mjs"'
+    loadingText: "Generating AI commit message"
+    output: "popup"
+    outputTitle: "AI Commit Message"

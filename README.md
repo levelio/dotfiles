@@ -10,6 +10,7 @@ Each top-level directory is a Stow package:
 nvim/.config/nvim/...
 alacritty/.config/alacritty/...
 zellij/.config/zellij/...
+lazygit/Library/Application Support/lazygit/...
 ```
 
 More packages can be added later, for example:
@@ -27,7 +28,7 @@ Clone this repo to `~/dotfiles`, then use `stow` from the repo root:
 ```bash
 brew install stow
 cd ~/dotfiles
-stow nvim alacritty zellij
+stow nvim alacritty zellij lazygit
 ```
 
 That will create:
@@ -36,6 +37,7 @@ That will create:
 ~/.config/nvim -> ~/dotfiles/nvim/.config/nvim
 ~/.config/alacritty -> ~/dotfiles/alacritty/.config/alacritty
 ~/.config/zellij -> ~/dotfiles/zellij/.config/zellij
+~/Library/Application Support/lazygit/config.yml -> ~/dotfiles/lazygit/Library/Application Support/lazygit/config.yml
 ```
 
 ## Common Commands
@@ -61,12 +63,12 @@ stow --delete alacritty
 Install multiple packages:
 
 ```bash
-stow nvim alacritty zellij
+stow nvim alacritty zellij lazygit
 ```
 
 ## Workflow
 
 - Keep commits scoped to one tool or one purpose.
 - Use package names that match the app or tool being configured.
-- Put app configs under `.config/...` inside each package.
+- Put app configs under their native paths inside each package; most use `.config/...`, while some macOS tools use `Library/Application Support/...`.
 - Keep machine-specific secrets or local-only files outside this repo.
