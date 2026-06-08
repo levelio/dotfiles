@@ -8,6 +8,29 @@ local function move_key(keys, from, to)
   end
 end
 
+local function replace_key(keys, replacement)
+  for index, key in ipairs(keys or {}) do
+    if key[1] == replacement[1] then
+      keys[index] = replacement
+      return
+    end
+  end
+
+  table.insert(keys, replacement)
+end
+
+local function references_key(lhs)
+  return {
+    lhs,
+    function()
+      Snacks.picker.lsp_references()
+    end,
+    desc = "References",
+    nowait = true,
+    has = "references",
+  }
+end
+
 local function close_current_buffer()
   Snacks.bufdelete()
 end
@@ -125,6 +148,7 @@ return {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
       local keys = opts.servers["*"].keys
+      replace_key(keys, references_key("gD"))
       move_key(keys, "<leader>cl", "<leader>ll")
       move_key(keys, "<leader>ca", "<leader>la")
       move_key(keys, "<leader>cc", "<leader>lc")
@@ -136,6 +160,8 @@ return {
 
       local vtsls = opts.servers.vtsls
       if type(vtsls) == "table" then
+        vtsls.keys = vtsls.keys or {}
+        replace_key(vtsls.keys, references_key("gD"))
         move_key(vtsls.keys, "<leader>cM", "<leader>lM")
         move_key(vtsls.keys, "<leader>cD", "<leader>lD")
         move_key(vtsls.keys, "<leader>cV", "<leader>lV")
