@@ -61,6 +61,9 @@ return {
     "folke/snacks.nvim",
     keys = {
       { "<leader>c", close_current_buffer, desc = "Close Current Buffer" },
+      { "<leader>gd", false },
+      { "<leader>gD", false },
+      { "<leader>gS", false },
     },
   },
 
