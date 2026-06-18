@@ -10,6 +10,10 @@ return {
           grep = {
             hidden = true,
           },
+          explorer = {
+            hidden = true,
+            ignored = true,
+          },
         },
         icons = {
           files = {
