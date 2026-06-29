@@ -18,3 +18,30 @@ vim.keymap.set({ "n", "x" }, "<leader>lf", function()
   LazyVim.format({ force = true })
 end, { desc = "Format" })
 vim.keymap.set("n", "<leader>lE", LazyVim.lsp.action["source.fixAll.eslint"], { desc = "ESLint Fix All" })
+vim.keymap.set("n", "<leader>pp", function()
+  Snacks.picker.projects()
+end, { desc = "Projects" })
+
+if vim.g.neovide then
+  vim.keymap.set("n", "<D-v>", '"+p', { desc = "Paste Clipboard" })
+  vim.keymap.set({ "i", "c" }, "<D-v>", "<C-r>+", { desc = "Paste Clipboard" })
+  vim.keymap.set({ "v", "s" }, "<D-v>", '"+P', { desc = "Paste Clipboard" })
+
+  local function neovide_font_size()
+    return tonumber(vim.o.guifont:match(":h(%d+)")) or 16
+  end
+
+  local function set_neovide_font_size(size)
+    vim.o.guifont = ("JetBrainsMono Nerd Font Mono,Noto Sans CJK SC:h%d"):format(size)
+  end
+
+  vim.keymap.set({ "n", "i", "v", "c" }, "<D-=>", function()
+    set_neovide_font_size(neovide_font_size() + 1)
+  end, { desc = "Increase Font Size" })
+  vim.keymap.set({ "n", "i", "v", "c" }, "<D-->", function()
+    set_neovide_font_size(math.max(8, neovide_font_size() - 1))
+  end, { desc = "Decrease Font Size" })
+  vim.keymap.set({ "n", "i", "v", "c" }, "<D-0>", function()
+    set_neovide_font_size(16)
+  end, { desc = "Reset Font Size" })
+end

@@ -1,0 +1,32 @@
+# Neovide configuration - https://neovide.dev/configuration.html
+# On macOS this file lives at ~/.config/neovide/config.toml and is managed by
+# GNU Stow (dotfiles/neovide package). Runtime-only options (cursor animation,
+# transparency, floating blur, ...) live in nvim/lua/config/options.lua because
+# they are set via vim.g.neovide_* and can be toggled at runtime.
+
+# Spawn Neovide detached from the launching terminal so it keeps running after
+# the terminal closes. On macOS this is almost always what you want.
+fork = true
+
+# Keep the macOS traffic-light buttons but blend the title bar into the editor
+# background for a seamless look. Alternatives: "full" (default chrome),
+# "buttonless" (no buttons at all), "none" (no decorations, may not resize).
+frame = "transparent"
+# Hide the window title text (the file path shown in the title bar).
+title-hidden = true
+
+# Let Neovide idle-throttle rendering when nothing changes to save battery/CPU,
+# and rely on VSync for smooth frames. Disable both only if you see stutter.
+idle = true
+vsync = true
+
+# Opening multiple files at once opens them as native macOS tabs.
+tabs = true
+
+# Font - kept in sync with Alacritty/Kitty (JetBrainsMono Nerd Font Mono, 16).
+# Neovide auto-selects bold/italic variants for this family.
+[font]
+size = 16.0
+[font.normal]
+family = "JetBrainsMono Nerd Font Mono"
+style = "Regular"

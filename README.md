@@ -8,6 +8,7 @@ Each top-level directory is a Stow package:
 
 ```text
 nvim/.config/nvim/...
+neovide/.config/neovide/...
 alacritty/.config/alacritty/...
 zellij/.config/zellij/...
 lazygit/Library/Application Support/lazygit/...
@@ -28,13 +29,14 @@ Clone this repo to `~/dotfiles`, then use `stow` from the repo root:
 ```bash
 brew install stow
 cd ~/dotfiles
-stow nvim alacritty zellij lazygit
+stow nvim neovide alacritty zellij lazygit
 ```
 
 That will create:
 
 ```text
 ~/.config/nvim -> ~/dotfiles/nvim/.config/nvim
+~/.config/neovide -> ~/dotfiles/neovide/.config/neovide
 ~/.config/alacritty -> ~/dotfiles/alacritty/.config/alacritty
 ~/.config/zellij -> ~/dotfiles/zellij/.config/zellij
 ~/Library/Application Support/lazygit/config.yml -> ~/dotfiles/lazygit/Library/Application Support/lazygit/config.yml
@@ -63,7 +65,7 @@ stow --delete alacritty
 Install multiple packages:
 
 ```bash
-stow nvim alacritty zellij lazygit
+stow nvim neovide alacritty zellij lazygit
 ```
 
 ## Workflow

@@ -14,6 +14,14 @@ return {
             hidden = true,
             ignored = true,
           },
+          projects = {
+            dev = {
+              "~/Projects/works",
+              "~/Projects",
+              "~/Documents/Codex",
+              "~/dotfiles",
+            },
+          },
         },
         icons = {
           files = {
