@@ -18,9 +18,6 @@ vim.keymap.set({ "n", "x" }, "<leader>lf", function()
   LazyVim.format({ force = true })
 end, { desc = "Format" })
 vim.keymap.set("n", "<leader>lE", LazyVim.lsp.action["source.fixAll.eslint"], { desc = "ESLint Fix All" })
-vim.keymap.set("n", "<leader>pp", function()
-  Snacks.picker.projects()
-end, { desc = "Projects" })
 
 if vim.g.neovide then
   vim.keymap.set("n", "<D-v>", '"+p', { desc = "Paste Clipboard" })
