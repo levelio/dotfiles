@@ -1,0 +1,9 @@
+#:schema https://yazi-rs.github.io/schemas/theme.json
+
+# TokyoNight Night — 与 kitty / zellij / alacritty 的终端配色一致，
+# 同时与 herdr (Dracula)、neovim (carbonfox) 同属深色蓝紫系。
+# flavor 通过 `ya pkg add kalidyasin/yazi-flavors:tokyonight-night` 安装，
+# 存放在本仓库 flavors/ 目录下，随 dotfiles 一起版本化。
+[flavor]
+dark = "tokyonight-night"
+light = "tokyonight-night"

@@ -1,0 +1,9 @@
+#:schema https://yazi-rs.github.io/schemas/keymap.json
+
+[mgr]
+prepend_keymap = [
+  { on = "e", run = "open", desc = "Edit or open selected files" },
+  { on = "o", run = "open", desc = "Edit or open selected files" },
+  { on = "<Enter>", run = "enter", desc = "Enter the child directory" },
+  { on = "i", run = "spot", desc = "Show file info (format, resolution, size)" },
+]

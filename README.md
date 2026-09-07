@@ -12,6 +12,7 @@ emacs/.config/emacs/...
 neovide/.config/neovide/...
 alacritty/.config/alacritty/...
 zellij/.config/zellij/...
+yazi/.config/yazi/... (theme flavor managed via `ya pkg`, versioned here too)
 lazygit/Library/Application Support/lazygit/...
 ```
 
@@ -30,7 +31,7 @@ Clone this repo to `~/dotfiles`, then use `stow` from the repo root:
 ```bash
 brew install stow
 cd ~/dotfiles
-stow nvim neovide alacritty zellij lazygit
+stow nvim neovide alacritty zellij lazygit yazi
 stow emacs
 ```
 
@@ -42,6 +43,7 @@ That will create:
 ~/.config/neovide -> ~/dotfiles/neovide/.config/neovide
 ~/.config/alacritty -> ~/dotfiles/alacritty/.config/alacritty
 ~/.config/zellij -> ~/dotfiles/zellij/.config/zellij
+~/.config/yazi -> ~/dotfiles/yazi/.config/yazi
 ~/Library/Application Support/lazygit/config.yml -> ~/dotfiles/lazygit/Library/Application Support/lazygit/config.yml
 ```
 
