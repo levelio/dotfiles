@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+// AI commit message generator for lazygit (invoked from ~/.config/lazygit/config.yml).
+// Provider: zai (Z.AI coding plan) — OpenAI-compatible chat/completions API.
+// Model default: glm-5.3-flash. API key: ZAI_API_KEY (falls back to ~/.zshrc).
+
 import { spawnSync } from "node:child_process";
 
 const shellEnvCache = new Map();
@@ -77,19 +81,19 @@ function env(name) {
   return value && value.trim() !== "" ? value.trim() : shellEnv(name);
 }
 
-function responsesUrl() {
-  const baseUrl = env("POLLYENG_BASE_URL") || "https://llm.bg.pollyenglish.cn/v1";
+function chatCompletionsUrl() {
+  const baseUrl = env("ZAI_BASE_URL") || "https://api.z.ai/api/coding/paas/v4";
 
   const trimmed = baseUrl.replace(/\/+$/, "");
-  return trimmed.endsWith("/v1") ? `${trimmed}/responses` : `${trimmed}/v1/responses`;
+  return trimmed.endsWith("/chat/completions") ? trimmed : `${trimmed}/chat/completions`;
 }
 
 function apiKey() {
-  return env("POLLYENG_API_KEY");
+  return env("ZAI_API_KEY");
 }
 
 function model() {
-  return env("POLLYENG_DEFAULT_MODEL") || "gpt-5.6-sol";
+  return env("ZAI_COMMIT_MODEL") || "glm-5.3-flash";
 }
 
 function run(command, args, options = {}) {
@@ -150,76 +154,17 @@ function extractError(payload, fallback, status) {
   return `HTTP ${status}: ${fallback.trim() || "request failed"}`;
 }
 
-function collectText(value, output) {
-  if (!value) {
-    return;
-  }
-
-  if (typeof value === "string") {
-    output.push(value);
-    return;
-  }
-
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      collectText(item, output);
-    }
-    return;
-  }
-
-  if (typeof value !== "object") {
-    return;
-  }
-
-  if (value.type === "output_text" && typeof value.text === "string") {
-    output.push(value.text);
-    return;
-  }
-
-  if (typeof value.output_text === "string") {
-    output.push(value.output_text);
-    return;
-  }
-
-  if (typeof value.content === "string") {
-    output.push(value.content);
-    return;
-  }
-
-  collectText(value.content, output);
-  collectText(value.output, output);
-  collectText(value.choices, output);
-  collectText(value.message, output);
-}
-
 function extractCommitMessage(payload) {
-  if (typeof payload?.output_text === "string" && payload.output_text.trim() !== "") {
-    return cleanCommitMessage(payload.output_text);
+  const content = payload?.choices?.[0]?.message?.content;
+  if (typeof content === "string" && content.trim() !== "") {
+    return cleanCommitMessage(content);
   }
 
-  const output = [];
-  collectText(payload?.output, output);
-  collectText(payload?.choices, output);
-
-  return cleanCommitMessage(output.join("\n"));
-}
-
-function parseSseBlock(block) {
-  const data = [];
-  let event;
-
-  for (const line of block.split(/\r?\n/)) {
-    if (line.startsWith("event:")) {
-      event = line.slice("event:".length).trim();
-    } else if (line.startsWith("data:")) {
-      data.push(line.slice("data:".length).trimStart());
-    }
+  if (typeof payload?.content === "string") {
+    return cleanCommitMessage(payload.content);
   }
 
-  return {
-    event,
-    data: data.join("\n"),
-  };
+  return "";
 }
 
 function extractStreamFailure(payload) {
@@ -236,11 +181,19 @@ function extractStreamFailure(payload) {
     return String(payload.message);
   }
 
-  if (payload?.response?.status_details?.error) {
-    return String(payload.response.status_details.error);
+  return JSON.stringify(payload);
+}
+
+function parseSseBlock(block) {
+  const data = [];
+
+  for (const line of block.split(/\r?\n/)) {
+    if (line.startsWith("data:")) {
+      data.push(line.slice("data:".length).trimStart());
+    }
   }
 
-  return JSON.stringify(payload);
+  return data.join("\n");
 }
 
 async function readStreamingCommitMessage(response) {
@@ -250,11 +203,10 @@ async function readStreamingCommitMessage(response) {
 
   const decoder = new TextDecoder();
   const deltas = [];
-  let completedMessage = "";
   let buffer = "";
 
   function handleBlock(block) {
-    const { event, data } = parseSseBlock(block);
+    const data = parseSseBlock(block);
     if (!data || data === "[DONE]") {
       return;
     }
@@ -266,19 +218,14 @@ async function readStreamingCommitMessage(response) {
       return;
     }
 
-    const type = payload.type || event;
-    if (type === "response.output_text.delta" && typeof payload.delta === "string") {
-      deltas.push(payload.delta);
-      return;
-    }
-
-    if (type === "response.completed") {
-      completedMessage = extractCommitMessage(payload.response || payload) || completedMessage;
-      return;
-    }
-
-    if (type === "response.failed" || type === "error") {
+    if (payload.error) {
       throw new Error(extractStreamFailure(payload));
+    }
+
+    const delta = payload?.choices?.[0]?.delta;
+    // delta.reasoning_content holds chain-of-thought; only keep final content.
+    if (delta && typeof delta.content === "string") {
+      deltas.push(delta.content);
     }
   }
 
@@ -301,16 +248,16 @@ async function readStreamingCommitMessage(response) {
     handleBlock(buffer);
   }
 
-  return cleanCommitMessage(deltas.join("")) || completedMessage;
+  return cleanCommitMessage(deltas.join(""));
 }
 
 async function requestCommitMessage(diff) {
   const key = apiKey();
   if (!key) {
-    throw new Error("Set POLLYENG_API_KEY before running this command.");
+    throw new Error("Set ZAI_API_KEY before running this command.");
   }
 
-  const response = await fetch(responsesUrl(), {
+  const response = await fetch(chatCompletionsUrl(), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -319,14 +266,21 @@ async function requestCommitMessage(diff) {
     body: JSON.stringify({
       model: model(),
       stream: true,
-      store: false,
-      instructions: systemPrompt,
-      input: [
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
         {
           role: "user",
           content: userPrompt(diff),
         },
       ],
+      // Mirrors how pi calls the zai provider: thinking enabled with a low
+      // reasoning effort keeps glm-5.3-flash fast for short commit messages.
+      thinking: { type: "enabled", clear_thinking: false },
+      reasoning_effort: "low",
+      max_tokens: 4096,
     }),
   });
 
